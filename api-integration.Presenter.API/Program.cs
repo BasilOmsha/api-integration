@@ -4,6 +4,19 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+builder.Services.AddHttpClient("Fingrid", (IServiceProvider serviceProvider, HttpClient client) =>
+{
+    var config = serviceProvider.GetRequiredService<IConfiguration>();
+    var apiKey = config["connStr:fingrid"];
+    
+    if (!string.IsNullOrEmpty(apiKey))
+    {
+        client.DefaultRequestHeaders.Add("x-api-key", apiKey);
+    }
+
+    client.BaseAddress = new Uri("https://data.fingrid.fi/api/");
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -14,28 +27,21 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
+app.MapGet("/fingrid", async (IHttpClientFactory httpClientFactory) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    var client = httpClientFactory.CreateClient("Fingrid");
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
+    try
+    {
+        var response = await client.GetAsync("datasets/363/");
+        response.EnsureSuccessStatusCode();
+        return Results.Ok(await response.Content.ReadAsStringAsync());
+    }
+    catch (HttpRequestException ex)
+    {
+        return Results.Problem($"Failed to fetch data: {ex.Message}", statusCode: 502);
+    }
 })
-.WithName("GetWeatherForecast");
+.WithName("FingridData");
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
