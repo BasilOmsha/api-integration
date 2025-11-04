@@ -1,6 +1,0 @@
-@api_integration.Presenter.API_HostAddress = http://localhost:5143
-
-GET {{api_integration.Presenter.API_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
