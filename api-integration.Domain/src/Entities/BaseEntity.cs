@@ -1,11 +1,11 @@
 namespace api_integration.Domain.src.Entities
 {
-    public class BaseClass
+    public class BaseEntity
     {
         // Make the Id immutable
         public Guid Id { get; init; }
 
-        protected BaseClass(Guid? Id = null)
+        protected BaseEntity(Guid? Id = null)
         {
             if (Id != null)
             {

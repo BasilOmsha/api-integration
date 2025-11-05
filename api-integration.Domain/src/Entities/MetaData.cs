@@ -3,7 +3,7 @@ using api_integration.Domain.src.ValueObjects;
 
 namespace api_integration.Domain.src.Entities
 {
-    public class MetaData : BaseClass
+    public class MetaData : BaseEntity
     {
         public int DatasetId { get; set; }
         public DateTime ModifiedAtUtc { get; set; }
@@ -89,6 +89,7 @@ namespace api_integration.Domain.src.Entities
             ArgumentNullException.ThrowIfNull(license);
             ArgumentNullException.ThrowIfNull(keyWordsEn);
             ArgumentNullException.ThrowIfNull(availableFormats);
+            
 
             if (string.IsNullOrWhiteSpace(type))
                 throw new ArgumentException("Type cannot be empty or whitespace", nameof(type));
