@@ -40,7 +40,7 @@ namespace api_integration.Domain.src.Entities
         }
 
         [SetsRequiredMembers]
-        public MetaData(int datasetId, DateTime modifiedAtUtc, string type, string status, string organization, string nameEn, string descriptionEn, string dataPeriodEn, string updateCadenceEn, string unitEn, string contactPersons, License license, List<string> keyWordsEn, List<string> contentGroupsEn, List<string> availableFormats, DateTime? dataAvailableFromUtc)
+        public MetaData(int datasetId, DateTime modifiedAtUtc, string type, string status, string organization, string nameEn, string descriptionEn, string dataPeriodEn, string? updateCadenceEn, string unitEn, string contactPersons, License license, List<string> keyWordsEn, List<string> contentGroupsEn, List<string> availableFormats, DateTime? dataAvailableFromUtc)
         : this(
             null,
             datasetId,
@@ -74,7 +74,7 @@ namespace api_integration.Domain.src.Entities
             string nameEn,
             string descriptionEn,
             string dataPeriodEn,
-            string updateCadenceEn,
+            string? updateCadenceEn,
             string unitEn,
             string contactPersons,
             License license,
