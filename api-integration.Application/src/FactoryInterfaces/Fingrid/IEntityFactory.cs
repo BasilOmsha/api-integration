@@ -7,6 +7,5 @@ namespace api_integration.Application.src.FactoryInterfaces.Fingrid
     {
         T CreateEntity(TCreateDto createDto);
         T UpdateEntity(TUpdateDto updateDto, T existingEntity);
-        T CreateEntityFromApiData(TReadDto readDto);
     }
 }

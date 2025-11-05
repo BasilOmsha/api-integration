@@ -7,7 +7,8 @@ namespace api_integration.Application.src.Factories.Fingrid
 {
     public class MetaDataFactory : 
         IDtoFactory<MetaData, MetaDataReadDto, MetaDataCreateDto, MetaDataUpdateDto>,
-        IEntityFactory<MetaData, MetaDataCreateDto, MetaDataUpdateDto, MetaDataReadDto>
+        IEntityFactory<MetaData, MetaDataCreateDto, MetaDataUpdateDto, MetaDataReadDto>,
+        IApiMapperFactory<MetaDataApiResponseDto, MetaDataReadDto>
     {
         /* (Entity → DTO)*/
         public MetaDataReadDto CreateReadDto(MetaData entity)
@@ -148,30 +149,6 @@ namespace api_integration.Application.src.Factories.Fingrid
                 contentGroupsEn: updateDto.ContentGroupsEn,
                 availableFormats: updateDto.AvailableFormats,
                 dataAvailableFromUtc: updateDto.DataAvailableFromUtc
-            );
-        }
-
-        public MetaData CreateEntityFromApiData(MetaDataReadDto readDto)
-        {
-            // This is for converting Fingrid API response to domain entity
-            return new MetaData(
-                Id: readDto.Id,
-                datasetId: readDto.DatasetId,
-                modifiedAtUtc: readDto.ModifiedAtUtc,
-                type: readDto.Type,
-                status: readDto.Status,
-                organization: readDto.Organization,
-                nameEn: readDto.NameEn,
-                descriptionEn: readDto.DescriptionEn,
-                dataPeriodEn: readDto.DataPeriodEn,
-                updateCadenceEn: readDto.UpdateCadenceEn,
-                unitEn: readDto.UnitEn,
-                contactPersons: readDto.ContactPersons,
-                license: new License(readDto.LicenseName, readDto.LicenseTermsLink),
-                keyWordsEn: readDto.KeyWordsEn,
-                contentGroupsEn: readDto.ContentGroupsEn,
-                availableFormats: readDto.AvailableFormats,
-                dataAvailableFromUtc: readDto.DataAvailableFromUtc
             );
         }
     }
