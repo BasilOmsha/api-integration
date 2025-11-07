@@ -10,7 +10,7 @@ namespace api_integration.Application.src.Factories.Fingrid
         IEntityFactory<MetaData, MetaDataCreateDto, MetaDataUpdateDto, MetaDataReadDto>,
         IApiMapperFactory<MetaDataApiResponseDto, MetaDataReadDto>
     {
-        /* (Entity → DTO)*/
+        /* (Entity -> DTO)*/
         public MetaDataReadDto CreateReadDto(MetaData entity)
         {
             return new MetaDataReadDto(
@@ -82,7 +82,7 @@ namespace api_integration.Application.src.Factories.Fingrid
         }
 
 
-        /* IEntityFactory Implementation (DTO → Entity) */
+        /* IEntityFactory Implementation (DTO -> Entity) */
         public MetaDataReadDto MapFromApiResponse(MetaDataApiResponseDto apiResponse)
         {
             return new MetaDataReadDto(
