@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\api-integration.Domain\api-integration.Domain.csproj" />
+    <ProjectReference Include="..\api-integration.Application\api-integration.Application.csproj" />
   </ItemGroup>
 
 </Project>
