@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using api_integration.Application.src.DTOs;
 using api_integration.Domain.src.ValueObjects;
@@ -122,9 +123,17 @@ namespace api_integration.UnitTests.src.ApplicationTests.Helpers
         }
 
         public static MetaDataExternalApiResDto DeserializeFromJson(string json)
-        {            
-            return JsonSerializer.Deserialize<MetaDataExternalApiResDto>(json) 
+        {
+            return JsonSerializer.Deserialize<MetaDataExternalApiResDto>(json)
                 ?? throw new InvalidOperationException("Failed to deserialize JSON");
+        }
+        
+        public static List<ValidationResult> ValidateDto(MetaDataCreateDto dto)
+        {
+            var context = new ValidationContext(dto);
+            var results = new List<ValidationResult>();
+            Validator.TryValidateObject(dto, context, results, true);
+            return results;
         }
     }
 }

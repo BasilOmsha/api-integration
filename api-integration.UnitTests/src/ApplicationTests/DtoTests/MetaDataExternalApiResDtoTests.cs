@@ -2,7 +2,7 @@ using System.Text.Json;
 using api_integration.Application.src.DTOs;
 using api_integration.UnitTests.src.ApplicationTests.Helpers;
 
-namespace api_integration.UnitTests.src.ApplicationTests
+namespace api_integration.UnitTests.src.ApplicationTests.DtoTests
 {
     public class MetaDataExternalApiResDtoTests
     {
