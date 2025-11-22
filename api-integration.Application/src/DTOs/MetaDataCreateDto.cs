@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using api_integration.Application.src.Interfaces.IDtos;
-using api_integration.Domain.src.Entities;
+using api_integration.Domain.src.Entities.Fingrid;
 using api_integration.Domain.src.ValueObjects;
 
 namespace api_integration.Application.src.DTOs

@@ -1,20 +1,52 @@
+using System.Diagnostics;
+using System.Reflection;
+using api_integration.Presenter.API.src;
+using api_integration.Presenter.API.src.RouteTransformer;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Microsoft.OpenApi.Models;
+using Scalar.AspNetCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
-
-builder.Services.AddHttpClient("Fingrid", (IServiceProvider serviceProvider, HttpClient client) =>
+builder.Services.AddControllers(options =>
 {
-    var config = serviceProvider.GetRequiredService<IConfiguration>();
-    var apiKey = config["connStr:fingrid"];
-    
-    if (!string.IsNullOrEmpty(apiKey))
-    {
-        client.DefaultRequestHeaders.Add("x-api-key", apiKey);
-    }
+    options.Conventions.Add(new RouteTokenTransformerConvention(new SpinCaseTransformer()));
+});
 
-    client.BaseAddress = new Uri("https://data.fingrid.fi/api/");
+// Register all project DIs
+builder.Services.DI(builder.Configuration);
+
+builder.Services.AddProblemDetails(o =>
+{
+    o.CustomizeProblemDetails = context =>
+    {
+        context.ProblemDetails.Instance = $"{context.HttpContext.Request.Method} {context.HttpContext.Request.Path}";
+        // context.ProblemDetails.Extensions.TryAdd("requestId", context.HttpContext.TraceIdentifier);
+        // Activity? activity = context.HttpContext.Features.Get<IHttpActivityFeature>()?.Activity;
+        // context.ProblemDetails.Extensions.TryAdd("traceId", activity?.Id);
+        context.ProblemDetails.Extensions.TryAdd("isSuccess", "false");
+        context.ProblemDetails.Extensions.TryAdd("isFailure", "true");
+        context.ProblemDetails.Extensions.TryAdd("value", null);
+
+    };
+});
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "API-Integration",
+        Description = "Integrating Open Data",
+    });
+
+    //Show XML comments on swagger
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    options.IncludeXmlComments(xmlPath);
 });
 
 var app = builder.Build();
@@ -22,26 +54,25 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.MapSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "API-Integration v1");
+    });
     app.MapOpenApi();
+
+    app.MapScalarApiReference(options =>
+    {
+        options
+            .WithTitle("API-Integration")
+            .WithTheme(ScalarTheme.Kepler)
+            .WithOpenApiRoutePattern("/swagger/{documentName}/swagger.json") // Swagger document to get xml comments
+            .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
+    });
 }
 
 app.UseHttpsRedirection();
-
-app.MapGet("/fingrid", async (IHttpClientFactory httpClientFactory) =>
-{
-    var client = httpClientFactory.CreateClient("Fingrid");
-
-    try
-    {
-        var response = await client.GetAsync("datasets/363/");
-        response.EnsureSuccessStatusCode();
-        return Results.Ok(await response.Content.ReadAsStringAsync());
-    }
-    catch (HttpRequestException ex)
-    {
-        return Results.Problem($"Failed to fetch data: {ex.Message}", statusCode: 502);
-    }
-})
-.WithName("FingridData");
-
+app.UseExceptionHandler();
+app.UseStatusCodePages();
+app.MapControllers();
 app.Run();

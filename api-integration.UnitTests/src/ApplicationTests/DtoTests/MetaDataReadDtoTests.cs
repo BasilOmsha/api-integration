@@ -1,6 +1,6 @@
 using api_integration.Application.src.DTOs;
 using api_integration.Application.src.Interfaces.IDtos;
-using api_integration.Domain.src.Entities;
+using api_integration.Domain.src.Entities.Fingrid;
 using api_integration.Domain.src.ValueObjects;
 using api_integration.UnitTests.src.ApplicationTests.Helpers;
 

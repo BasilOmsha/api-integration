@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using api_integration.Domain.src.ValueObjects;
 
-namespace api_integration.Domain.src.Entities
+namespace api_integration.Domain.src.Entities.Fingrid
 {
     public class MetaData : BaseEntity
     {

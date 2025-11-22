@@ -1,4 +1,4 @@
-using api_integration.Domain.src.Entities;
+using api_integration.Domain.src.Entities.Fingrid;
 using api_integration.Domain.src.ValueObjects;
 
 namespace api_integration.UnitTests.src.DomainTests;
