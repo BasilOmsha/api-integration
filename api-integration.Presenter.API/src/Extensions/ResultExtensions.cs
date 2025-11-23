@@ -57,7 +57,7 @@ namespace api_integration.Presenter.API.src.Extensions
                 return string.Empty;
 
             var request = httpContext.Request;
-            return $"{request.Path} {request.QueryString}";
+            return $"{request.Method} {request.Path} {request.QueryString}";
         }
 
         private static int GetStatusCode(ErrorType errorType) =>
