@@ -24,7 +24,7 @@
 ## Getting Started
 
 ### Prerequisites
-- .NET 9.0 SDK
+- .NET 10.0 SDK
 - Git
 
 ### Clone Repository
