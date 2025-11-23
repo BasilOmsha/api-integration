@@ -4,6 +4,9 @@ namespace api_integration.SharedKernel.src
     {
         public static readonly Error None = new(string.Empty, string.Empty, ErrorType.Failure);
         public static readonly Error NullValue = new("Error.NullValue", "Null value was provided",  ErrorType.Failure);
+        public string Code { get; }
+        public string Description { get; }
+        public ErrorType Type { get; }
 
         private Error(string code, string? description, ErrorType errorType)
         {
@@ -11,10 +14,6 @@ namespace api_integration.SharedKernel.src
             Description = description  ?? string.Empty;
             Type = errorType;
         }
-
-        public string Code { get; }
-        public string Description { get; }
-        public ErrorType Type { get; }
 
         // Expose factory methods
         public static Error NotFound(string code, string description) => new(code, description, ErrorType.NotFound);
