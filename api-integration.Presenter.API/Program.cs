@@ -2,7 +2,6 @@ using System.Diagnostics;
 using System.Reflection;
 using api_integration.Presenter.API.src;
 using api_integration.Presenter.API.src.RouteTransformer;
-using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
