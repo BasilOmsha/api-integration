@@ -4,6 +4,7 @@ using api_integration.Domain.src.Entities.Fingrid;
 using api_integration.Presenter.API.src.Extensions;
 using api_integration.SharedKernel.src;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace api_integration.Presenter.API.src.Controllers
 {
@@ -15,13 +16,15 @@ namespace api_integration.Presenter.API.src.Controllers
         public FingridMetaDataController(IFingridService fingridService)
         {
              _fingridService = fingridService ?? throw new ArgumentNullException(nameof(fingridService));
-       }
+        }
         
         /// <summary>
         /// Gets Fingrid metadata by dataset ID from the Fingrid external API
         /// </summary>
         /// <param name="datasetId">The dataset identifier (must be a positive integer)</param>
+        /// <returns>Metadata for the specified dataset</returns>
         [HttpGet("{datasetId?}")]
+        [EnableRateLimiting("fingrid-external-api")]
         [ProducesResponseType(typeof(MetaDataExternalApiResDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]

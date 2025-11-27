@@ -1,8 +1,10 @@
 using System.Diagnostics;
 using System.Reflection;
+using System.Threading.RateLimiting;
 using api_integration.Presenter.API.src;
 using api_integration.Presenter.API.src.RouteTransformer;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
 
@@ -29,6 +31,18 @@ builder.Services.AddProblemDetails(o =>
     };
 });
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("fingrid-external-api", opt =>
+    {
+        opt.PermitLimit = 4;
+        opt.Window = TimeSpan.FromSeconds(12);
+        opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        opt.QueueLimit = 2;
+    });
+});
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -68,6 +82,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseRateLimiter();
 app.UseExceptionHandler();
 app.UseStatusCodePages();
 app.MapControllers();
