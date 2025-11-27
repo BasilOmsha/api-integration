@@ -8,6 +8,19 @@
     <UserSecretsId>db6e7f74-c675-4bf8-bcf2-e17365aac7cd</UserSecretsId>
   </PropertyGroup>
 
+  <!-- DynamicProxyGenAssembly2 is a temporary assembly built by mocking systems that use CastleProxy 
+  like Moq or NSubsitute. It is generated when the mock is needed and 
+  disposed of after the tests are finished. Source: https://stackoverflow.com/questions/15405040/what-is-the-dynamicproxygenassembly2-assembly -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="api-integration.UnitTests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\api-integration.Infrastructure\api-integration.Infrastructure.csproj" />
+    <ProjectReference Include="..\api-integration.Application\api-integration.Application.csproj" />
+  </ItemGroup>
+
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
