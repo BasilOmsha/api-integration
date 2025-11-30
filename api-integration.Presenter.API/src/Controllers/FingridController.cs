@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using System.Web;
 using api_integration.Application.src.DTOs;
 using api_integration.Application.src.Interfaces;
 using api_integration.Domain.src.Entities.Fingrid;
@@ -41,8 +42,8 @@ namespace api_integration.Presenter.API.src.Controllers
                 var nullError = Result.Failure<MetaDataExternalApiResDto>(FingridErrors.DatasetIdRequired);
                 return nullError.ToProblemDetails(HttpContext);
             }
-
-             var trimmedId = datasetId.Trim();
+            var decodedId = HttpUtility.UrlDecode(datasetId);
+             var trimmedId = decodedId.Trim();
 
             if (!DatasetIdRegex.IsMatch(trimmedId))
             {
