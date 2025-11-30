@@ -100,8 +100,6 @@ var app = builder.Build();
     });
 // }
 
-
-app.UseCors();
 app.UseHttpsRedirection();
 app.UseRateLimiter();
 app.UseExceptionHandler();
