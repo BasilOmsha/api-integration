@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Threading.RateLimiting;
 using api_integration.Presenter.API.src;
 using api_integration.Presenter.API.src.RouteTransformer;
+using Azure.Identity;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.OpenApi.Models;
@@ -15,6 +16,24 @@ builder.Services.AddControllers(options =>
 {
     options.Conventions.Add(new RouteTokenTransformerConvention(new SpinCaseTransformer()));
 });
+
+// Add Azure Key Vault
+if (!builder.Environment.IsDevelopment())
+{
+    var keyVaultUri = builder.Configuration["KeyVault:VaultUri"];
+    if (!string.IsNullOrWhiteSpace(keyVaultUri))
+    {
+        builder.Configuration.AddAzureKeyVault(
+            new Uri(keyVaultUri),
+            new DefaultAzureCredential()
+        );
+    }
+    else
+    {
+        throw new InvalidOperationException(
+            "KeyVault:VaultUri is required in production environments");
+    }
+}
 
 // Register all project DIs
 builder.Services.DI(builder.Configuration);
