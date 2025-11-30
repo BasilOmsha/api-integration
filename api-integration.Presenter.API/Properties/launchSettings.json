@@ -15,9 +15,10 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": false,
+      "launchUrl": "scalar/v1",
       "applicationUrl": "https://localhost:7285;http://localhost:5143",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Staging"
+        "ASPNETCORE_ENVIRONMENT": "Production"
       }
     }
   }

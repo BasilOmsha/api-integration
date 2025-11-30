@@ -81,8 +81,8 @@ builder.Services.AddSwaggerGen(options =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+// if (app.Environment.IsDevelopment())
+// {
     app.MapSwagger();
     app.UseSwaggerUI(c =>
     {
@@ -98,8 +98,10 @@ if (app.Environment.IsDevelopment())
             .WithOpenApiRoutePattern("/swagger/{documentName}/swagger.json") // Swagger document to get xml comments
             .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
     });
-}
+// }
 
+
+app.UseCors();
 app.UseHttpsRedirection();
 app.UseRateLimiter();
 app.UseExceptionHandler();
