@@ -11,7 +11,7 @@ namespace api_integration.Domain.src.Entities.Fingrid
         public static readonly Error ExternalApiError = Error.Failure("ExternalApi.Error", "External API returned an error.");
         public static readonly Error DeserializationFailure = Error.Failure("Deserialization.Failure", "Failed to deserialize response from external API.");
         public static readonly Error ExternalApiException = Error.Failure("ExternalApi.Exception", "An exception occurred while calling the external API.");
-        public static readonly Error UnauthorizedAccess = Error.Failure("ExternalApi.Unauthorized", "Unauthorized access to the external API.");
+        public static readonly Error UnauthorizedAccess = Error.Unauthorized("ExternalApi.Unauthorized", "Unauthorized access to the external API.");
         public static readonly Error RateLimitExceeded = Error.RateLimit("ExternalApi.RateLimitExceeded", "Rate limit exceeded when accessing the external API.");
         public static readonly Error RequestTimeout = Error.Failure("ExternalApi.RequestTimeout", "The request to the external API timed out.");
         public static Error NetworkError(string message) => Error.Failure("ExternalApi.NetworkError", $"Network error occurred: {message}");

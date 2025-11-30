@@ -21,6 +21,7 @@ namespace api_integration.SharedKernel.src
         public static Error Conflict(string code, string description) => new(code, description, ErrorType.Conflict);
         public static Error RateLimit(string code, string description) => new(code, description, ErrorType.RateLimit);
         public static Error Failure(string code, string description) => new(code, description, ErrorType.Failure);
+        public static Error Unauthorized(string code, string description) => new(code, description, ErrorType.Unauthorized);
 
     }
 
@@ -30,7 +31,8 @@ namespace api_integration.SharedKernel.src
         Validation = 1,
         NotFound = 2,
         Conflict = 3,
-        RateLimit = 4
+        RateLimit = 4, 
+        Unauthorized = 5
     }
 
 }

@@ -67,6 +67,7 @@ namespace api_integration.Presenter.API.src.Extensions
                 ErrorType.NotFound => StatusCodes.Status404NotFound,
                 ErrorType.Conflict => StatusCodes.Status409Conflict,
                 ErrorType.RateLimit => StatusCodes.Status429TooManyRequests,
+                ErrorType.Unauthorized => StatusCodes.Status401Unauthorized,
                 _ => StatusCodes.Status500InternalServerError
             };
 
@@ -77,6 +78,7 @@ namespace api_integration.Presenter.API.src.Extensions
                 ErrorType.NotFound => "Not Found",
                 ErrorType.Conflict => "Conflict",
                 ErrorType.RateLimit => "Rate Limit Exceeded",
+                ErrorType.Unauthorized => "Unauthorized",
                 _ => "Internal Server Error"
             };
 
@@ -87,6 +89,7 @@ namespace api_integration.Presenter.API.src.Extensions
                 ErrorType.NotFound => "https://tools.ietf.org/html/rfc7231#section-6.5.4",
                 ErrorType.Conflict => "https://tools.ietf.org/html/rfc7231#section-6.5.8",
                 ErrorType.RateLimit => "https://tools.ietf.org/html/rfc6585#section-4",
+                ErrorType.Unauthorized => "https://tools.ietf.org/html/rfc7235#section-3.1",
                 _ => "https://tools.ietf.org/html/rfc7231#section-6.6.1"
             };
     }
