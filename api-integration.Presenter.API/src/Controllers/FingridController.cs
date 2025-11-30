@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using api_integration.Application.src.DTOs;
 using api_integration.Application.src.Interfaces;
 using api_integration.Domain.src.Entities.Fingrid;
@@ -13,6 +14,8 @@ namespace api_integration.Presenter.API.src.Controllers
     public class FingridMetaDataController : ControllerBase
     {
         private readonly IFingridService _fingridService;
+        private static readonly Regex DatasetIdRegex = new(@"^[1-9]\d{0,2}$", RegexOptions.Compiled); // 1-999
+
         public FingridMetaDataController(IFingridService fingridService)
         {
              _fingridService = fingridService ?? throw new ArgumentNullException(nameof(fingridService));
@@ -21,7 +24,7 @@ namespace api_integration.Presenter.API.src.Controllers
         /// <summary>
         /// Gets Fingrid metadata by dataset ID from the Fingrid external API
         /// </summary>
-        /// <param name="datasetId">The dataset identifier (must be a positive integer)</param>
+        /// <param name="datasetId">The dataset identifier (must be a positive integer between 1 and 999)</param>
         /// <returns>Metadata for the specified dataset</returns>
         [HttpGet("{datasetId?}")]
         [EnableRateLimiting("fingrid-external-api")]
@@ -31,7 +34,7 @@ namespace api_integration.Presenter.API.src.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status405MethodNotAllowed)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status429TooManyRequests)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<MetaDataExternalApiResDto>> GetMetaDataById(string? datasetId)
+        public async Task<ActionResult<MetaDataExternalApiResDto>> GetMetaDataById([FromRoute] string? datasetId)
         {
             if (string.IsNullOrWhiteSpace(datasetId))
             {
@@ -39,14 +42,16 @@ namespace api_integration.Presenter.API.src.Controllers
                 return nullError.ToProblemDetails(HttpContext);
             }
 
-            if (!int.TryParse(datasetId.Trim(), out int parsedDatasetId))
+             var trimmedId = datasetId.Trim();
+
+            if (!DatasetIdRegex.IsMatch(trimmedId))
             {
                 var formatError = Result.Failure<MetaDataExternalApiResDto>(
                     FingridErrors.InvalidFormat);
                 return formatError.ToProblemDetails(HttpContext);
             }
 
-            var result = await _fingridService.GetExternalMetaDataByIdAsync(parsedDatasetId);
+            var result = await _fingridService.GetExternalMetaDataByIdAsync(int.Parse(trimmedId));
             return result.IsSuccess ? Ok(result) : result.ToProblemDetails(HttpContext);
         }
     }
