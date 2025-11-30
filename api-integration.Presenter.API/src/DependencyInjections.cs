@@ -24,19 +24,9 @@ namespace api_integration.Presenter.API.src
                 // Use class defaults, then bind from appsettings.json if section exists
                 configuration.GetSection(FingridApiConfigurations.SectionName).Bind(options);
 
-                var environment = configuration["ASPNETCORE_ENVIRONMENT"] ?? "Development";
+                // Override from User Secrets
+                options.ApiKey = configuration.GetConnectionString("fingrid");
 
-                if (environment.Equals("Development", StringComparison.OrdinalIgnoreCase))
-                {
-                    // Override from User Secrets
-                    // options.ApiKey = configuration["ConnStr:fingrid"];
-                    options.ApiKey = configuration.GetConnectionString("fingrid");
-                }
-                else
-                {
-                    // Override from Azure Key Vault
-                     options.ApiKey = configuration.GetConnectionString("fingrid");
-                }
             });
 
              services.AddOptions<FingridApiConfigurations>()

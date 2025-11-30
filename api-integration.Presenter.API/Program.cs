@@ -18,21 +18,13 @@ builder.Services.AddControllers(options =>
 });
 
 // Add Azure Key Vault
-if (!builder.Environment.IsDevelopment())
+var keyVaultUri = builder.Configuration["KeyVault:VaultUri"];
+if (!string.IsNullOrWhiteSpace(keyVaultUri))
 {
-    var keyVaultUri = builder.Configuration["KeyVault:VaultUri"];
-    if (!string.IsNullOrWhiteSpace(keyVaultUri))
-    {
-        builder.Configuration.AddAzureKeyVault(
-            new Uri(keyVaultUri),
-            new DefaultAzureCredential()
-        );
-    }
-    else
-    {
-        throw new InvalidOperationException(
-            "KeyVault:VaultUri is required in production environments");
-    }
+    builder.Configuration.AddAzureKeyVault(
+        new Uri(keyVaultUri),
+        new DefaultAzureCredential()
+    );
 }
 
 // Register all project DIs
