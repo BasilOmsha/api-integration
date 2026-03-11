@@ -1,4 +1,5 @@
 using api_integration.Application.src.DTOs;
+using api_integration.Domain.src.Entities.Fingrid;
 using api_integration.Domain.src.ValueObjects;
 
 namespace api_integration.Application.src.Mappers
@@ -25,6 +26,30 @@ namespace api_integration.Application.src.Mappers
                 ContentGroupsEn = external.ContentGroupsEn,
                 AvailableFormats = external.AvailableFormats,
                 DataAvailableFromUtc = external.DataAvailableFromUtc
+            };
+        }
+
+        public static MetaDataReadDto ToReadDto(this MetaData entity)
+        {
+            return new MetaDataReadDto
+            {
+                Id = entity.Id,
+                DatasetId = entity.DatasetId,
+                ModifiedAtUtc = entity.ModifiedAtUtc,
+                Type = entity.Type,
+                Status = entity.Status,
+                Organization = entity.Organization,
+                NameEn = entity.NameEn,
+                DescriptionEn = entity.DescriptionEn,
+                DataPeriodEn = entity.DataPeriodEn,
+                UpdateCadenceEn = entity.UpdateCadenceEn,
+                UnitEn = entity.UnitEn,
+                ContactPersons = entity.ContactPersons,
+                License = entity.License,
+                KeyWordsEn = entity.KeyWordsEn,
+                ContentGroupsEn = entity.ContentGroupsEn,
+                AvailableFormats = entity.AvailableFormats,
+                DataAvailableFromUtc = entity.DataAvailableFromUtc
             };
         }
     }

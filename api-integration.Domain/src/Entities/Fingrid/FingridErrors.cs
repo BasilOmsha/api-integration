@@ -14,6 +14,8 @@ namespace api_integration.Domain.src.Entities.Fingrid
         public static readonly Error UnauthorizedAccess = Error.Unauthorized("ExternalApi.Unauthorized", "Unauthorized access to the external API.");
         public static readonly Error RateLimitExceeded = Error.RateLimit("ExternalApi.RateLimitExceeded", "Rate limit exceeded when accessing the external API.");
         public static readonly Error RequestTimeout = Error.Failure("ExternalApi.RequestTimeout", "The request to the external API timed out.");
-        public static Error NetworkError(string message) => Error.Failure("ExternalApi.NetworkError", $"Network error occurred: {message}");
+        public static readonly Error InvalidDateRange = Error.Validation("Dataset.InvalidDateRange", "startTime must be before endTime.");
+        public static readonly Error DateRangeRequired = Error.Validation("Dataset.DateRangeRequired", "startTime and endTime are required.");
+        public static readonly Error NetworkError = Error.Failure("ExternalApi.NetworkError", "A network error occurred while contacting the external API.");
     }
 }

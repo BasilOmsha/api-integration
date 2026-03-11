@@ -10,11 +10,13 @@ namespace api_integration.Presenter.API.src
     {
         private readonly ILogger<GlobalExceptionHandler> _logger;
         private readonly IProblemDetailsService _problemDetailsService;
+        private readonly IWebHostEnvironment _env;
 
-        public GlobalExceptionHandler(IProblemDetailsService problemDetailsService, ILogger<GlobalExceptionHandler> logger)
+        public GlobalExceptionHandler(IProblemDetailsService problemDetailsService, ILogger<GlobalExceptionHandler> logger, IWebHostEnvironment env)
         {
             _logger = logger;
             _problemDetailsService = problemDetailsService;
+            _env = env;
         }
 
         public async ValueTask<bool> TryHandleAsync(
@@ -42,7 +44,7 @@ namespace api_integration.Presenter.API.src
                     
                     Type = exception.GetType().Name,
                     Title = "Server Error",
-                    Detail = exception.Message,
+                    Detail = _env.IsDevelopment() ? exception.Message : "An unexpected error occurred.",
                 }
             });
         }

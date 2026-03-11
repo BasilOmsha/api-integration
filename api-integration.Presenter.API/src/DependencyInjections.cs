@@ -1,8 +1,13 @@
 using api_integration.Application.src.Interfaces;
 using api_integration.Application.src.Interfaces.IConnConfig;
+using api_integration.Domain.src.Interfaces.Repositories;
+using api_integration.Infrastructure.src.Data;
+using api_integration.Infrastructure.src.Repositories;
 using api_integration.Presenter.API.src.ConnConfig;
 using api_integration.Presenter.API.src.Services;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Polly;
 
 namespace api_integration.Presenter.API.src
 {
@@ -12,6 +17,8 @@ namespace api_integration.Presenter.API.src
         {
             AddConfiguration(services, configuration);
             AddServices(services, configuration);
+            AddDatabase(services, configuration);
+            AddRepositories(services);
 
             return services;
         }
@@ -47,8 +54,41 @@ namespace api_integration.Presenter.API.src
                 }
                 client.BaseAddress = new Uri(config.BaseUrl);
                 client.DefaultRequestHeaders.Add("X-API-Key", config.ApiKey);
-                client.Timeout = TimeSpan.FromSeconds(config.TimeoutSeconds);
-            });
+                // Let Polly handle timeouts (inner per-attempt + outer overall).
+                // HttpClient.Timeout would cancel the entire retry chain prematurely.
+                client.Timeout = Timeout.InfiniteTimeSpan;
+            })
+            // Outer policy: overall timeout for the entire operation (all retries + waits)
+            .AddPolicyHandler(Policy.TimeoutAsync<HttpResponseMessage>(
+                TimeSpan.FromMinutes(3)))
+            // Middle policy: retry on 429 / transient errors
+            .AddTransientHttpErrorPolicy(policy =>
+            {
+                return policy.OrResult(r => r.StatusCode == System.Net.HttpStatusCode.TooManyRequests)
+                    .WaitAndRetryAsync(
+                        retryCount: 3,
+                        sleepDurationProvider: _ => TimeSpan.FromSeconds(13)
+                    );
+            })
+            // Inner policy: per-attempt timeout (each individual HTTP request)
+            .AddPolicyHandler(Policy.TimeoutAsync<HttpResponseMessage>(
+                TimeSpan.FromSeconds(30)));
+
+            services.AddScoped<IFingridDataService, FingridDataService>();
+            services.AddScoped<IFingridMetaDataService, FingridMetaDataService>();
+
+            services.AddHostedService<CacheCleanupBackgroundService>();
+        }
+        private static void AddDatabase(IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddDbContext<AppDbContext>(options =>
+                options.UseNpgsql(configuration.GetConnectionString("postgres")));
+        }
+
+        private static void AddRepositories(IServiceCollection services)
+        {
+            services.AddScoped<IMetaDataRepository, MetaDataRepository>();
+            services.AddScoped<ICachedDataPointRepository, CachedDataPointRepository>();
         }
     }
 }

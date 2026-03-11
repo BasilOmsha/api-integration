@@ -9,5 +9,6 @@ namespace api_integration.Application.src.Interfaces
     public interface IFingridService
     {
           Task<Result<MetaDataExternalApiResDto>> GetExternalMetaDataByIdAsync(int id);
+          Task<Result<DatasetDataExternalApiResDto>> GetDataByDatasetIdAsync(int datasetId, DateTime startTime, DateTime endTime);
     }
 }

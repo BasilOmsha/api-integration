@@ -29,6 +29,9 @@ if (!string.IsNullOrWhiteSpace(keyVaultUri))
 // Register all project DIs
 builder.Services.DI(builder.Configuration);
 
+// SignalR for real-time viewer count
+builder.Services.AddSignalR();
+
 builder.Services.AddProblemDetails(o =>
 {
     o.CustomizeProblemDetails = context =>
@@ -46,10 +49,10 @@ builder.Services.AddRateLimiter(options =>
 {
     options.AddFixedWindowLimiter("fingrid-external-api", opt =>
     {
-        opt.PermitLimit = 4;
+        opt.PermitLimit = builder.Environment.IsDevelopment() ? 20 : 4;
         opt.Window = TimeSpan.FromSeconds(12);
         opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-        opt.QueueLimit = 2;
+        opt.QueueLimit = builder.Environment.IsDevelopment() ? 10 : 2;
     });
 });
 
@@ -69,11 +72,38 @@ builder.Services.AddSwaggerGen(options =>
     options.IncludeXmlComments(xmlPath);
 });
 
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("Dev", policy =>
+        {
+            policy.WithOrigins("http://localhost:5173")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
+        });
+    });
+}
+else
+{
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("Prod", policy =>
+        {
+            policy.WithOrigins("https://yourdomain.com")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
+        });
+    });
+}
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-// if (app.Environment.IsDevelopment())
-// {
+if (app.Environment.IsDevelopment())
+{
     app.MapSwagger();
     app.UseSwaggerUI(c =>
     {
@@ -86,14 +116,24 @@ var app = builder.Build();
         options
             .WithTitle("API-Integration")
             .WithTheme(ScalarTheme.Kepler)
-            .WithOpenApiRoutePattern("/swagger/{documentName}/swagger.json") // Swagger document to get xml comments
+            .WithOpenApiRoutePattern("/swagger/{documentName}/swagger.json")
             .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
     });
-// }
+}
 
+if (app.Environment.IsDevelopment())
+{
+    app.UseCors("Dev");
+}
+else
+{
+    app.UseHsts();
+    app.UseCors("Prod");
+}
 app.UseHttpsRedirection();
 app.UseRateLimiter();
 app.UseExceptionHandler();
 app.UseStatusCodePages();
 app.MapControllers();
+app.MapHub<api_integration.Presenter.API.src.Hubs.DashboardHub>("/hubs/dashboard");
 app.Run();
