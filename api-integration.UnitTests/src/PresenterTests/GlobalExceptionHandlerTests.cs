@@ -1,5 +1,7 @@
 using api_integration.Presenter.API.src;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -9,13 +11,16 @@ namespace api_integration.UnitTests.src.PresenterTests
     {
         private readonly Mock<ILogger<GlobalExceptionHandler>> _mockLogger;
         private readonly Mock<IProblemDetailsService> _mockProblemDetailsService;
+        private readonly Mock<IWebHostEnvironment> _mockEnv;
         private readonly GlobalExceptionHandler _handler;
 
         public GlobalExceptionHandlerTests()
         {
             _mockLogger = new Mock<ILogger<GlobalExceptionHandler>>();
             _mockProblemDetailsService = new Mock<IProblemDetailsService>();
-            _handler = new GlobalExceptionHandler(_mockProblemDetailsService.Object, _mockLogger.Object);
+            _mockEnv = new Mock<IWebHostEnvironment>();
+            _mockEnv.Setup(e => e.EnvironmentName).Returns(Environments.Development);
+            _handler = new GlobalExceptionHandler(_mockProblemDetailsService.Object, _mockLogger.Object, _mockEnv.Object);
         }
 
         //Exception Type Mapping Tests

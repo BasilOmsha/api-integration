@@ -65,7 +65,7 @@ dotnet ef database update --project api-integration.Infrastructure --startup-pro
 
 ```bash
 cd api-integration.Presenter.API
-dotnet run
+dotnet watch
 ```
 
 The server starts at:
