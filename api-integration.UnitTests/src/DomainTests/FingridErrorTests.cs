@@ -107,30 +107,14 @@ namespace api_integration.UnitTests.src.DomainTests
         }
 
 
-        // Factory Method Tests
-        [Theory]
-        [InlineData("Connection refused")]
-        [InlineData("DNS resolution failed")]
-        [InlineData("")]
-        [InlineData(null)]
-        public void NetworkError_WithMessage_CreatesCorrectError(string? message)
+        [Fact]
+        public void NetworkError_HasCorrectProperties()
         {
-            var error = FingridErrors.NetworkError(message ?? string.Empty);
+            var error = FingridErrors.NetworkError;
 
             Assert.Equal("ExternalApi.NetworkError", error.Code);
-            Assert.StartsWith("Network error occurred:", error.Description);
-            Assert.Contains(message ?? string.Empty, error.Description);
+            Assert.Equal("A network error occurred while contacting the external API.", error.Description);
             Assert.Equal(ErrorType.Failure, error.Type);
-        }
-
-        [Fact]
-        public void NetworkError_WithSpecificMessage_HasExpectedDescription()
-        {
-            var message = "Connection timeout after 30 seconds";
-
-            var error = FingridErrors.NetworkError(message);
-
-            Assert.Equal($"Network error occurred: {message}", error.Description);
         }
 
         //Error Uniqueness Tests
@@ -148,13 +132,14 @@ namespace api_integration.UnitTests.src.DomainTests
                 FingridErrors.ExternalApiException,
                 FingridErrors.UnauthorizedAccess,
                 FingridErrors.RateLimitExceeded,
-                FingridErrors.RequestTimeout
+                FingridErrors.RequestTimeout,
+                FingridErrors.NetworkError
             };
 
             var distinctCodes = errors.Select(e => e.Code).Distinct().ToList();
 
             //InvalidFormat and ZeroOrNegative have the same code intentionally
-            Assert.Equal(9, distinctCodes.Count); // 10 errors, but 2 share the same code
+            Assert.Equal(10, distinctCodes.Count); // 11 errors, but 2 share the same code
         }
 
         [Fact]
