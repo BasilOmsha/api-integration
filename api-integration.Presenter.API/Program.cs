@@ -115,8 +115,8 @@ if (app.Environment.IsDevelopment())
 if (!app.Environment.IsDevelopment())
     app.UseHsts();
 
-app.UseCors("App");
 app.UseHttpsRedirection();
+app.UseCors("App");
 app.UseRateLimiter();
 app.UseExceptionHandler();
 app.UseStatusCodePages();
