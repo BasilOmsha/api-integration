@@ -75,32 +75,20 @@ builder.Services.AddSwaggerGen(options =>
     options.IncludeXmlComments(xmlPath);
 });
 
-if (builder.Environment.IsDevelopment())
+var allowedOrigins = builder.Environment.IsDevelopment()
+    ? new[] { "http://localhost:5173" }
+    : builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
+
+builder.Services.AddCors(options =>
 {
-    builder.Services.AddCors(options =>
+    options.AddPolicy("App", policy =>
     {
-        options.AddPolicy("Dev", policy =>
-        {
-            policy.WithOrigins("http://localhost:5173")
-                  .AllowAnyHeader()
-                  .AllowAnyMethod()
-                  .AllowCredentials();
-        });
+        policy.WithOrigins(allowedOrigins)
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
-}
-else
-{
-    builder.Services.AddCors(options =>
-    {
-        options.AddPolicy("Prod", policy =>
-        {
-            policy.WithOrigins("https://yourdomain.com")
-                  .AllowAnyHeader()
-                  .AllowAnyMethod()
-                  .AllowCredentials();
-        });
-    });
-}
+});
 
 var app = builder.Build();
 
@@ -124,15 +112,10 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseCors("Dev");
-}
-else
-{
+if (!app.Environment.IsDevelopment())
     app.UseHsts();
-    app.UseCors("Prod");
-}
+
+app.UseCors("App");
 app.UseHttpsRedirection();
 app.UseRateLimiter();
 app.UseExceptionHandler();
